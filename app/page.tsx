@@ -1,65 +1,195 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="mx-auto max-w-6xl px-4">
+      {/* Hero */}
+      <section className="flex flex-col items-center py-20 text-center md:py-28">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" />
+          Powered by Claude
+        </div>
+        <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+          Build your career plan with{" "}
+          <span className="text-primary">AI-powered coaching</span>
+        </h1>
+        <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted">
+          A structured coaching conversation that produces your personalized
+          Career Blueprint — complete with goals, skills assessment, and an
+          actionable development plan with milestones.
+        </p>
+        <div className="mt-8 flex gap-3">
+          <Link
+            href="/coach"
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+          >
+            Start Coaching Session
+          </Link>
+          <Link
+            href="/import"
+            className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:border-primary/30"
+          >
+            Import Existing Blueprint
+          </Link>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-16">
+        <h2 className="mb-10 text-center text-2xl font-bold">How It Works</h2>
+        <div className="grid gap-8 md:grid-cols-3">
+          {STEPS.map((step) => (
+            <div
+              key={step.number}
+              className="rounded-xl border border-border bg-card p-6"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                {step.number}
+              </div>
+              <h3 className="mb-2 font-semibold">{step.title}</h3>
+              <p className="text-sm leading-relaxed text-muted">
+                {step.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* What You Get */}
+      <section className="py-16">
+        <h2 className="mb-10 text-center text-2xl font-bold">
+          What&apos;s In Your Blueprint
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {FEATURES.map((feature) => (
+            <div
+              key={feature.title}
+              className="rounded-xl border border-border bg-card p-5"
             >
-              Learning
-            </a>{" "}
-            center.
+              <div className="mb-2 text-2xl">{feature.icon}</div>
+              <h3 className="mb-1 text-sm font-semibold">{feature.title}</h3>
+              <p className="text-xs leading-relaxed text-muted">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Methodology */}
+      <section className="py-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="mb-4 text-2xl font-bold">
+            5-Phase Coaching Methodology
+          </h2>
+          <p className="text-sm leading-relaxed text-muted">
+            The coaching session follows a structured 5-phase process developed
+            through A/B/C testing across multiple LLM providers, universality
+            testing across 4 diverse career personas, and bias testing across 7
+            additional personas — scoring an average 9.29/10 with no meaningful
+            bias across industries.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="mt-10 grid gap-3 md:grid-cols-5">
+          {PHASES.map((phase) => (
+            <div
+              key={phase.number}
+              className="flex flex-col items-center rounded-xl border border-border bg-card p-4 text-center"
+            >
+              <span className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                {phase.number}
+              </span>
+              <h3 className="mb-1 text-xs font-semibold">{phase.title}</h3>
+              <p className="text-xs text-muted">{phase.description}</p>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 text-center">
+        <h2 className="mb-4 text-2xl font-bold">Ready to build your plan?</h2>
+        <p className="mb-6 text-muted">
+          20-30 minutes of focused conversation. One actionable Career Blueprint.
+        </p>
+        <Link
+          href="/coach"
+          className="inline-block rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+        >
+          Start Your Session
+        </Link>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border py-8 text-center text-xs text-muted">
+        <p>
+          Built with Next.js, Vercel AI SDK, and Claude.{" "}
+          The prompt behind this project is{" "}
+          <a
+            href="https://github.com"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            open source
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }
+
+const STEPS = [
+  {
+    number: "1",
+    title: "Have a Conversation",
+    description:
+      "Share your career story, accomplishments, and aspirations. The AI coach asks targeted questions across three areas: current reality, future vision, and development path.",
+  },
+  {
+    number: "2",
+    title: "Get Your Blueprint",
+    description:
+      "The coach synthesizes your conversation into a structured Career Blueprint — goals across 5 time horizons, an evidence-based skills assessment, and concrete milestones.",
+  },
+  {
+    number: "3",
+    title: "Track & Evolve",
+    description:
+      "Your Blueprint becomes an interactive tracker. Check off actions, update milestone statuses, track skill progress, and review monthly as your career evolves.",
+  },
+];
+
+const FEATURES = [
+  {
+    icon: "🎯",
+    title: "Career Goals",
+    description:
+      "5 time horizons from 1-year to ultimate, with authenticity and coherence checks built in.",
+  },
+  {
+    icon: "📊",
+    title: "Skills Assessment",
+    description:
+      "Evidence-based current skills derived from your accomplishments, plus desired skills mapped to goals.",
+  },
+  {
+    icon: "🗺️",
+    title: "Milestone Tracker",
+    description:
+      "3-5 concrete milestones with due dates, success criteria, and status tracking.",
+  },
+  {
+    icon: "🔍",
+    title: "Reflection",
+    description:
+      "Values alignment, trade-offs acknowledged, constraints honored, and accountability structures.",
+  },
+];
+
+const PHASES = [
+  { number: 1, title: "Understanding", description: "Context & background" },
+  { number: 2, title: "Discovery", description: "Strategic questioning" },
+  { number: 3, title: "Skills", description: "Evidence-based assessment" },
+  { number: 4, title: "Goals", description: "Synthesis & articulation" },
+  { number: 5, title: "Action", description: "Milestones & next steps" },
+];
