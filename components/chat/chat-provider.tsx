@@ -136,15 +136,26 @@ export function ChatProvider({ systemPrompt, children }: ChatProviderProps) {
 // ── Phase Detection ──
 
 function detectPhase(messages: UIMessage[]): CoachingPhase {
+  // Skip the welcome message — only analyze actual conversation
   const assistantTexts = messages
     .filter((m) => m.role === "assistant")
+    .slice(1) // skip welcome
     .map((m) => getMessageText(m).toLowerCase());
 
+  if (assistantTexts.length === 0) return 1;
+
+  // Check the most recent assistant messages for phase-specific language
+  const recent = assistantTexts.slice(-3).join(" ");
   const allText = assistantTexts.join(" ");
 
-  if (allText.includes("career blueprint") && allText.includes("milestone tracker")) return 5;
-  if (allText.includes("draft") && (allText.includes("goal") || allText.includes("synthesis"))) return 4;
-  if (allText.includes("accomplishment") && allText.includes("skill")) return 3;
-  if (assistantTexts.length > 3) return 2;
+  // Phase 5: Blueprint output delivered
+  if (recent.includes("milestone tracker") || recent.includes("# career blueprint")) return 5;
+  // Phase 4: Drafting goals
+  if (recent.includes("draft") && (recent.includes("goal") || recent.includes("synthesis"))) return 4;
+  // Phase 3: Skills assessment (specific coaching language, not intro mentions)
+  if (recent.includes("accomplishment analysis") || recent.includes("key accomplishments") || (allText.includes("skill vs") || allText.includes("skill or experience"))) return 3;
+  // Phase 2: Discovery begins after a few exchanges
+  if (assistantTexts.length >= 2) return 2;
+
   return 1;
 }
