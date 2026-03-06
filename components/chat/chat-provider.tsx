@@ -62,7 +62,7 @@ export function ChatProvider({ systemPrompt, children }: ChatProviderProps) {
         parts: [
           {
             type: "text",
-            text: "I'm here to help you build your Career Blueprint — a document that captures where you are, where you want to go, and how to get there. By the end of our conversation, you'll walk away with a clean, structured plan covering your career goals, skills assessment, and concrete next steps with milestones.\n\nThis will take some back-and-forth conversation — probably 20-30 exchanges — as we dig into what you really want from your career. To get started, two things:\n\n1. The more I know about your career story, the more precise I can be. A resume, portfolio, client list, LinkedIn profile, or even a verbal walkthrough — whatever you have, go ahead and share it. If you've got a resume with specific accomplishments and impact, that tends to give me the most to work with.\n2. What prompted you to think about your career development right now — what's changing, or what question are you trying to answer?",
+            text: "I'm here to help you build your Career Blueprint — a document that captures where you are, where you want to go, and how to get there. By the end of our conversation, you'll walk away with a clean, structured plan covering your career goals, skills assessment, and concrete next steps with milestones.\n\nThis will take some back-and-forth conversation — probably 20-30 exchanges — as we dig into what you really want from your career.\n\nIf you've got some time set aside and you're ready to dive in, just say the word and we'll get started.",
           },
         ],
       },
