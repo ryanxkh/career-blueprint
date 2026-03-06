@@ -13,62 +13,37 @@ export function ChatMessages() {
 
   // Filter to only conversation messages (skip welcome)
   const conversationMessages = messages.filter((m) => m.id !== "welcome");
+  const isWaiting = status === "submitted" || status === "streaming";
 
   return (
     <div className="chat-scroll flex-1 overflow-y-auto px-4 py-6">
       <div className="mx-auto max-w-2xl space-y-5">
         {conversationMessages.map((message) => (
-          <div key={message.id} className="flex gap-3">
-            {/* Avatar */}
-            <div
-              className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
-                message.role === "user"
-                  ? "bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
-                  : "bg-primary/10 text-primary"
-              }`}
-            >
-              {message.role === "user" ? "Y" : "C"}
-            </div>
-
-            {/* Message content */}
-            <div className="min-w-0 flex-1">
-              <p className="mb-1 text-xs font-medium text-muted">
-                {message.role === "user" ? "You" : "Career Coach"}
-              </p>
-              {message.role === "assistant" ? (
-                <div
-                  className="prose-chat text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderMarkdown(getMessageText(message)),
-                  }}
-                />
-              ) : (
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {getMessageText(message)}
-                </p>
-              )}
-            </div>
-          </div>
+          <MessageBubble
+            key={message.id}
+            role={message.role}
+            text={getMessageText(message)}
+          />
         ))}
 
-        {(status === "submitted" || status === "streaming") &&
-          messages[messages.length - 1]?.role === "user" && (
-            <div className="flex gap-3">
-              <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
-                C
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-muted">
-                  Career Coach
-                </p>
-                <div className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted" />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted [animation-delay:150ms]" />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted [animation-delay:300ms]" />
-                </div>
+        {/* Loading indicator — always show when waiting for response */}
+        {isWaiting && (
+          <div className="flex gap-3">
+            <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
+              C
+            </div>
+            <div>
+              <p className="mb-1.5 text-xs font-medium text-muted">
+                Career Coach
+              </p>
+              <div className="flex items-center gap-1.5 py-1">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-primary/40" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-primary/40 [animation-delay:150ms]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-primary/40 [animation-delay:300ms]" />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
         <div ref={bottomRef} />
       </div>
@@ -76,7 +51,37 @@ export function ChatMessages() {
   );
 }
 
-// Simple markdown-to-HTML for chat messages
+function MessageBubble({ role, text }: { role: string; text: string }) {
+  const isUser = role === "user";
+
+  return (
+    <div className="flex gap-3">
+      <div
+        className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
+          isUser
+            ? "bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+            : "bg-primary/10 text-primary"
+        }`}
+      >
+        {isUser ? "Y" : "C"}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="mb-1 text-xs font-medium text-muted">
+          {isUser ? "You" : "Career Coach"}
+        </p>
+        {isUser ? (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{text}</p>
+        ) : (
+          <div
+            className="prose-chat text-sm"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function renderMarkdown(text: string): string {
   return (
     text

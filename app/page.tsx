@@ -66,7 +66,6 @@ export default function HomePage() {
               key={feature.title}
               className="rounded-xl border border-border bg-card p-5"
             >
-              <div className="mb-2 text-2xl">{feature.icon}</div>
               <h3 className="mb-1 text-sm font-semibold">{feature.title}</h3>
               <p className="text-xs leading-relaxed text-muted">
                 {feature.description}
@@ -161,25 +160,21 @@ const STEPS = [
 
 const FEATURES = [
   {
-    icon: "🎯",
     title: "Career Goals",
     description:
       "5 time horizons from 1-year to ultimate, with authenticity and coherence checks built in.",
   },
   {
-    icon: "📊",
     title: "Skills Assessment",
     description:
       "Evidence-based current skills derived from your accomplishments, plus desired skills mapped to goals.",
   },
   {
-    icon: "🗺️",
     title: "Milestone Tracker",
     description:
       "3-5 concrete milestones with due dates, success criteria, and status tracking.",
   },
   {
-    icon: "🔍",
     title: "Reflection",
     description:
       "Values alignment, trade-offs acknowledged, constraints honored, and accountability structures.",
