@@ -120,8 +120,8 @@ const QUICK_REPLIES = [
     text: "I'm ready to get started. Let's do this.",
   },
   {
-    label: "I have my resume",
-    text: "I'm ready to start. I have my resume to share with you.",
+    label: "I'll paste my resume",
+    text: "I'm ready to start. I'll paste my resume into the chat for you.",
   },
   {
     label: "Starting fresh — no materials",
