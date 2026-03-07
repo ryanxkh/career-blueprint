@@ -11,10 +11,28 @@ import {
   BlueprintLivingDoc,
 } from "@/components/blueprint";
 import { serializeBlueprint } from "@/lib/blueprint-serializer";
+import type { Blueprint, DesiredSkillState } from "@/lib/types";
 
-export function BlueprintClient() {
+interface BlueprintClientProps {
+  blueprintId?: string;
+  initialBlueprint?: Blueprint;
+  initialSkillProgress?: DesiredSkillState[];
+  initialLastReviewed?: string | null;
+}
+
+export function BlueprintClient({
+  blueprintId,
+  initialBlueprint,
+  initialSkillProgress,
+  initialLastReviewed,
+}: BlueprintClientProps = {}) {
   return (
-    <BlueprintProvider>
+    <BlueprintProvider
+      blueprintId={blueprintId}
+      initialBlueprint={initialBlueprint ?? null}
+      initialSkillProgress={initialSkillProgress ?? []}
+      initialLastReviewed={initialLastReviewed ?? null}
+    >
       <BlueprintContent />
     </BlueprintProvider>
   );

@@ -6,12 +6,17 @@ import { parseBlueprint } from "@/lib/blueprint-parser";
 import { saveBlueprint } from "@/lib/storage";
 import { containsBlueprint } from "@/lib/blueprint-detector";
 
-export function ImportClient() {
+interface ImportClientProps {
+  isAuthenticated: boolean;
+}
+
+export function ImportClient({ isAuthenticated }: ImportClientProps) {
   const router = useRouter();
   const [markdown, setMarkdown] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleImport() {
+  async function handleImport() {
     setError(null);
 
     if (!markdown.trim()) {
@@ -28,12 +33,32 @@ export function ImportClient() {
 
     try {
       const blueprint = parseBlueprint(markdown);
-      saveBlueprint(blueprint);
-      router.push("/blueprint");
+
+      if (isAuthenticated) {
+        setLoading(true);
+        const res = await fetch("/api/blueprints", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: blueprint.name, data: blueprint }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to save blueprint");
+        }
+
+        const saved = await res.json();
+        router.push(`/blueprint?id=${saved.id}`);
+      } else {
+        // Fallback to localStorage for unauthenticated users
+        saveBlueprint(blueprint);
+        router.push("/blueprint");
+      }
     } catch {
       setError(
         "Failed to parse the Blueprint. Make sure it follows the standard Career Blueprint format."
       );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -95,10 +120,10 @@ export function ImportClient() {
       <div className="mt-4 flex gap-3">
         <button
           onClick={handleImport}
-          disabled={!markdown.trim()}
+          disabled={!markdown.trim() || loading}
           className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Import & View Blueprint
+          {loading ? "Importing..." : "Import & View Blueprint"}
         </button>
       </div>
     </div>

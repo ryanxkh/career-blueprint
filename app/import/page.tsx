@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { auth } from "@/auth";
 import { ImportClient } from "./import-client";
 
 export const metadata: Metadata = {
@@ -6,6 +7,9 @@ export const metadata: Metadata = {
   description: "Import an existing Career Blueprint from markdown.",
 };
 
-export default function ImportPage() {
-  return <ImportClient />;
+export default async function ImportPage() {
+  const session = await auth();
+  const isAuthenticated = !!session?.user?.id;
+
+  return <ImportClient isAuthenticated={isAuthenticated} />;
 }

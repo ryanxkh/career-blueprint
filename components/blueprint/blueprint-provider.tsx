@@ -1,21 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import type {
   Blueprint,
-  Action,
   MilestoneStatus,
   DesiredSkillState,
   SkillProgress,
 } from "@/lib/types";
-import {
-  getBlueprint,
-  saveBlueprint,
-  getSkillProgress,
-  saveSkillProgress,
-  getLastReviewed,
-  setLastReviewed,
-} from "@/lib/storage";
 
 interface BlueprintContextValue {
   blueprint: Blueprint | null;
@@ -35,17 +26,34 @@ export function useBlueprintContext() {
   return ctx;
 }
 
-export function BlueprintProvider({ children }: { children: React.ReactNode }) {
-  const [blueprint, setBlueprint] = useState<Blueprint | null>(null);
-  const [skillProgress, setSkillProgressState] = useState<DesiredSkillState[]>([]);
-  const [lastReviewedDate, setLastReviewedDate] = useState<string | null>(null);
+interface BlueprintProviderProps {
+  blueprintId?: string;
+  initialBlueprint: Blueprint | null;
+  initialSkillProgress: DesiredSkillState[];
+  initialLastReviewed: string | null;
+  children: React.ReactNode;
+}
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    setBlueprint(getBlueprint());
-    setSkillProgressState(getSkillProgress());
-    setLastReviewedDate(getLastReviewed());
-  }, []);
+export function BlueprintProvider({
+  blueprintId,
+  initialBlueprint,
+  initialSkillProgress,
+  initialLastReviewed,
+  children,
+}: BlueprintProviderProps) {
+  const [blueprint, setBlueprint] = useState<Blueprint | null>(initialBlueprint);
+  const [skillProgress, setSkillProgressState] = useState<DesiredSkillState[]>(initialSkillProgress);
+  const [lastReviewedDate, setLastReviewedDate] = useState<string | null>(initialLastReviewed);
+
+  // Persist changes to server
+  function persistToServer(data: Record<string, unknown>) {
+    if (!blueprintId) return;
+    fetch(`/api/blueprints/${blueprintId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+  }
 
   const toggleAction = useCallback(
     (index: number) => {
@@ -55,9 +63,10 @@ export function BlueprintProvider({ children }: { children: React.ReactNode }) {
       actions[index] = { ...actions[index], completed: !actions[index].completed };
       updated.nextSteps = { ...updated.nextSteps, immediateActions: actions };
       setBlueprint(updated);
-      saveBlueprint(updated);
+      persistToServer({ data: updated });
     },
-    [blueprint]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [blueprint, blueprintId]
   );
 
   const updateMilestoneStatus = useCallback(
@@ -68,9 +77,10 @@ export function BlueprintProvider({ children }: { children: React.ReactNode }) {
       milestones[index] = { ...milestones[index], status };
       updated.nextSteps = { ...updated.nextSteps, milestones };
       setBlueprint(updated);
-      saveBlueprint(updated);
+      persistToServer({ data: updated });
     },
-    [blueprint]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [blueprint, blueprintId]
   );
 
   const updateSkillProgressFn = useCallback(
@@ -81,18 +91,20 @@ export function BlueprintProvider({ children }: { children: React.ReactNode }) {
           existing >= 0
             ? prev.map((s, i) => (i === existing ? { ...s, progress } : s))
             : [...prev, { name: skillName, progress }];
-        saveSkillProgress(next);
+        persistToServer({ skillProgress: next });
         return next;
       });
     },
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [blueprintId]
   );
 
   const markReviewed = useCallback(() => {
     const now = new Date().toISOString();
     setLastReviewedDate(now);
-    setLastReviewed(now);
-  }, []);
+    persistToServer({ lastReviewed: now });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blueprintId]);
 
   return (
     <BlueprintContext.Provider

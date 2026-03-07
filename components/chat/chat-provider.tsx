@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useContext, useRef, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useRef, useEffect, useState, useCallback, useMemo } from "react";
 import type { UIMessage } from "@ai-sdk/react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { containsBlueprint, extractBlueprintMarkdown } from "@/lib/blueprint-detector";
 import { parseBlueprint } from "@/lib/blueprint-parser";
-import { saveBlueprint, saveChatHistory } from "@/lib/storage";
+import { saveBlueprint as saveToLocalStorage } from "@/lib/storage";
 import type { CoachingPhase } from "@/lib/types";
 
 // ── Helpers ──
@@ -27,6 +27,7 @@ interface ChatContextValue {
   currentPhase: CoachingPhase;
   blueprintReady: boolean;
   error: Error | undefined;
+  sessionId: string;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -37,36 +38,61 @@ export function useChatContext() {
   return ctx;
 }
 
+// ── Welcome message ──
+
+const WELCOME_MESSAGE: UIMessage = {
+  id: "welcome",
+  role: "assistant",
+  parts: [
+    {
+      type: "text",
+      text: "I'm here to help you build your Career Blueprint — a document that captures where you are, where you want to go, and how to get there. By the end of our conversation, you'll walk away with a clean, structured plan covering your career goals, skills assessment, and concrete next steps with milestones.\n\nThis will take some back-and-forth conversation — probably 20-30 exchanges — as we dig into what you really want from your career.\n\nIf you've got some time set aside and you're ready to dive in, just say the word and we'll get started.",
+    },
+  ],
+};
+
 // ── Provider ──
 
 interface ChatProviderProps {
   systemPrompt: string;
+  sessionId: string;
+  initialMessages?: { role: "user" | "assistant"; content: string }[];
   children: React.ReactNode;
 }
 
-export function ChatProvider({ systemPrompt, children }: ChatProviderProps) {
+export function ChatProvider({
+  systemPrompt,
+  sessionId,
+  initialMessages,
+  children,
+}: ChatProviderProps) {
   const [blueprintReady, setBlueprintReady] = useState(false);
+
+  // Convert DB messages to UIMessage format
+  const hydratedMessages = useMemo(() => {
+    const msgs: UIMessage[] = [WELCOME_MESSAGE];
+    if (initialMessages) {
+      for (const msg of initialMessages) {
+        msgs.push({
+          id: crypto.randomUUID(),
+          role: msg.role,
+          parts: [{ type: "text", text: msg.content }],
+        });
+      }
+    }
+    return msgs;
+  }, [initialMessages]);
+
   const transportRef = useRef(
     new DefaultChatTransport({
       api: "/api/chat",
-      body: { system: systemPrompt },
+      body: { system: systemPrompt, sessionId },
     })
   );
 
   const { messages, sendMessage: rawSendMessage, status, error } = useChat({
     transport: transportRef.current,
-    messages: [
-      {
-        id: "welcome",
-        role: "assistant",
-        parts: [
-          {
-            type: "text",
-            text: "I'm here to help you build your Career Blueprint — a document that captures where you are, where you want to go, and how to get there. By the end of our conversation, you'll walk away with a clean, structured plan covering your career goals, skills assessment, and concrete next steps with milestones.\n\nThis will take some back-and-forth conversation — probably 20-30 exchanges — as we dig into what you really want from your career.\n\nIf you've got some time set aside and you're ready to dive in, just say the word and we'll get started.",
-          },
-        ],
-      },
-    ],
+    messages: hydratedMessages,
   });
 
   // Detect current coaching phase from message content
@@ -88,26 +114,45 @@ export function ChatProvider({ systemPrompt, children }: ChatProviderProps) {
       if (markdown) {
         try {
           const blueprint = parseBlueprint(markdown);
-          saveBlueprint(blueprint);
+          // Save to server via API
+          fetch("/api/blueprints", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: blueprint.name,
+              data: blueprint,
+              sessionId,
+            }),
+          }).catch(() => {
+            // Fallback: still save to localStorage
+          });
+          // Also save locally for immediate access
+          saveToLocalStorage(blueprint);
           setBlueprintReady(true);
         } catch {
           // Parse failed — don't mark as ready
         }
       }
     }
-  }, [messages, status, blueprintReady]);
+  }, [messages, status, blueprintReady, sessionId]);
 
-  // Persist chat history on change
+  // Auto-title session from first user message
+  const hasAutoTitled = useRef(false);
   useEffect(() => {
-    if (messages.length > 1) {
-      saveChatHistory(
-        messages.map((m) => ({
-          role: m.role as "user" | "assistant",
-          content: getMessageText(m),
-        }))
-      );
-    }
-  }, [messages]);
+    if (hasAutoTitled.current) return;
+    const firstUser = messages.find((m) => m.role === "user");
+    if (!firstUser) return;
+
+    hasAutoTitled.current = true;
+    const text = getMessageText(firstUser).slice(0, 60);
+    const title = text.length < getMessageText(firstUser).length ? text + "..." : text;
+
+    fetch(`/api/sessions/${sessionId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    }).catch(() => {});
+  }, [messages, sessionId]);
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -126,6 +171,7 @@ export function ChatProvider({ systemPrompt, children }: ChatProviderProps) {
         currentPhase,
         blueprintReady,
         error,
+        sessionId,
       }}
     >
       {children}

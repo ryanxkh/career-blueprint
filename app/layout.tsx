@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { SessionWrapper } from "@/components/session-wrapper";
+import { AuthButton } from "@/components/auth-button";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,37 +40,40 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-          <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-            <Link
-              href="/"
-              className="text-lg font-semibold tracking-tight"
-            >
-              Career Blueprint
-            </Link>
-            <div className="flex items-center gap-6 text-sm">
+        <SessionWrapper>
+          <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
+            <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
               <Link
-                href="/coach"
-                className="text-muted transition-colors hover:text-foreground"
+                href="/"
+                className="text-lg font-semibold tracking-tight"
               >
-                Coach
+                Career Blueprint
               </Link>
-              <Link
-                href="/blueprint"
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                Blueprint
-              </Link>
-              <Link
-                href="/import"
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                Import
-              </Link>
-            </div>
-          </nav>
-        </header>
-        <main>{children}</main>
+              <div className="flex items-center gap-6 text-sm">
+                <Link
+                  href="/coach"
+                  className="text-muted transition-colors hover:text-foreground"
+                >
+                  Coach
+                </Link>
+                <Link
+                  href="/blueprint"
+                  className="text-muted transition-colors hover:text-foreground"
+                >
+                  Blueprint
+                </Link>
+                <Link
+                  href="/import"
+                  className="text-muted transition-colors hover:text-foreground"
+                >
+                  Import
+                </Link>
+                <AuthButton />
+              </div>
+            </nav>
+          </header>
+          <main>{children}</main>
+        </SessionWrapper>
       </body>
     </html>
   );

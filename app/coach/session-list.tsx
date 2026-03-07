@@ -1,0 +1,114 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { COACHING_PHASES } from "@/lib/types";
+
+interface SessionData {
+  id: string;
+  title: string;
+  phase: number;
+  isComplete: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export function SessionList({ sessions }: { sessions: SessionData[] }) {
+  const router = useRouter();
+  const [creating, setCreating] = useState(false);
+
+  async function handleNewSession() {
+    setCreating(true);
+    const res = await fetch("/api/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const session = await res.json();
+    router.push(`/coach?session=${session.id}`);
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Coaching Sessions</h1>
+          <p className="mt-1 text-sm text-muted">
+            Resume a session or start a new one.
+          </p>
+        </div>
+        <button
+          onClick={handleNewSession}
+          disabled={creating}
+          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+        >
+          {creating ? "Creating..." : "New Session"}
+        </button>
+      </div>
+
+      <div className="mt-8 space-y-3">
+        {sessions.map((session) => {
+          const phaseInfo = COACHING_PHASES[session.phase - 1];
+          const updated = session.updatedAt;
+          const timeAgo = formatTimeAgo(updated);
+
+          return (
+            <Link
+              key={session.id}
+              href={`/coach?session=${session.id}`}
+              className="flex items-center justify-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/30"
+            >
+              <div className="min-w-0 flex-1">
+                <h2 className="font-medium truncate">{session.title}</h2>
+                <div className="mt-1 flex items-center gap-3 text-xs text-muted">
+                  <span className="flex items-center gap-1">
+                    {session.isComplete ? (
+                      <>
+                        <span className="inline-block h-2 w-2 rounded-full bg-success" />
+                        Complete
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+                        Phase {session.phase}: {phaseInfo?.label}
+                      </>
+                    )}
+                  </span>
+                  <span>{timeAgo}</span>
+                </div>
+              </div>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0 text-muted"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function formatTimeAgo(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}

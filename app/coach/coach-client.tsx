@@ -11,11 +11,21 @@ import {
 
 interface CoachClientProps {
   systemPrompt: string;
+  sessionId: string;
+  initialMessages?: { role: "user" | "assistant"; content: string }[];
 }
 
-export function CoachClient({ systemPrompt }: CoachClientProps) {
+export function CoachClient({
+  systemPrompt,
+  sessionId,
+  initialMessages,
+}: CoachClientProps) {
   return (
-    <ChatProvider systemPrompt={systemPrompt}>
+    <ChatProvider
+      systemPrompt={systemPrompt}
+      sessionId={sessionId}
+      initialMessages={initialMessages}
+    >
       <CoachLayout />
     </ChatProvider>
   );
