@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import { SessionWrapper } from "@/components/session-wrapper";
 import { AuthButton } from "@/components/auth-button";
@@ -13,6 +13,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -38,18 +44,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
       >
         <SessionWrapper>
           <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-            <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+            <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
               <Link
                 href="/"
-                className="text-lg font-semibold tracking-tight"
+                className="font-display text-xl tracking-tight"
               >
                 Career Blueprint
               </Link>
-              <div className="flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-8 text-sm">
                 <Link
                   href="/coach"
                   className="text-muted transition-colors hover:text-foreground"
