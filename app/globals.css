@@ -58,10 +58,30 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Subtle dot grid for hero background */
-.dot-grid {
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Blueprint-style line grid */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(124, 58, 237, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Chat message entrance animation */
+.chat-msg {
+  animation: chatIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes chatIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Typing indicator bounce */
+.typing-dot {
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* Hero gradient glow */

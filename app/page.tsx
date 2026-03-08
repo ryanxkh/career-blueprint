@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { BlueprintDiamond } from "@/components/landing/blueprint-diamond";
+import { HeroChat } from "@/components/landing/hero-chat";
 
 export default function HomePage() {
   return (
     <div className="overflow-hidden">
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <section className="relative">
-        {/* Background layers */}
+        {/* Background layers — blueprint-style line grid */}
         <div className="hero-glow absolute inset-0" />
-        <div className="dot-grid absolute inset-0 opacity-30" />
+        <div className="blueprint-grid absolute inset-0 opacity-40" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
-        {/* Floating brand shapes — mix of geometric diamonds and soft shapes */}
+        {/* Floating brand shapes */}
         <BlueprintDiamond className="float-1 pointer-events-none absolute -right-8 top-12 h-44 w-44 text-primary/[0.12] md:h-56 md:w-56" />
         <BlueprintDiamond className="float-2 pointer-events-none absolute -left-16 top-1/3 h-32 w-32 text-primary/[0.08]" />
         <div className="float-3 pointer-events-none absolute bottom-24 right-1/4 h-20 w-20 rounded-full bg-primary/[0.06]" />
@@ -52,7 +53,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Right — product mockup */}
+          {/* Right — animated product mockup */}
           <div className="relative">
             <div className="absolute -inset-4 rounded-3xl bg-primary/10 blur-2xl" />
             <div className="relative overflow-hidden rounded-xl border border-stone-200 bg-white shadow-2xl dark:border-stone-700 dark:bg-stone-900">
@@ -67,80 +68,35 @@ export default function HomePage() {
                   career-blueprint.vercel.app/coach
                 </div>
               </div>
-
-              {/* Chat messages */}
-              <div className="space-y-3 p-5">
-                {/* Coach */}
-                <div className="flex gap-2.5">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-                    C
-                  </div>
-                  <div className="rounded-2xl rounded-tl-sm bg-stone-100 px-3.5 py-2 text-[13px] leading-relaxed dark:bg-stone-800">
-                    What does career success look like for you in the next year?
-                  </div>
-                </div>
-
-                {/* User */}
-                <div className="flex justify-end">
-                  <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary px-3.5 py-2 text-[13px] leading-relaxed text-white">
-                    I want to lead a cross-functional product team and ship our
-                    v2.0 launch by Q3.
-                  </div>
-                </div>
-
-                {/* Coach */}
-                <div className="flex gap-2.5">
-                  <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-                    C
-                  </div>
-                  <div className="rounded-2xl rounded-tl-sm bg-stone-100 px-3.5 py-2 text-[13px] leading-relaxed dark:bg-stone-800">
-                    That&apos;s specific and measurable. What skills would you
-                    need to develop to make that happen?
-                  </div>
-                </div>
-
-                {/* Blueprint preview generating */}
-                <div className="mt-2 rounded-xl border border-primary/20 bg-primary/5 p-3.5">
-                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-primary">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Generating Your Blueprint
-                  </div>
-                  <div className="mt-2.5 space-y-1.5">
-                    <div className="rounded bg-white/60 px-2.5 py-1.5 dark:bg-stone-800/60">
-                      <span className="text-[10px] font-medium text-primary">
-                        1-YEAR GOAL
-                      </span>
-                      <p className="text-[11px] leading-snug text-foreground">
-                        Lead cross-functional product team, ship v2.0
-                      </p>
-                    </div>
-                    <div className="rounded bg-white/60 px-2.5 py-1.5 dark:bg-stone-800/60">
-                      <span className="text-[10px] font-medium text-primary">
-                        KEY SKILL GAP
-                      </span>
-                      <p className="text-[11px] leading-snug text-foreground">
-                        People leadership — 6/10 current, 8/10 target
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Animated chat — client component */}
+              <HeroChat />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Stats Bar ────────────────────────────────────────────── */}
-      <section className="bg-stone-900 dark:bg-stone-800">
-        <div className="mx-auto grid max-w-4xl grid-cols-3 gap-8 px-6 py-12 text-center md:py-16">
-          {STATS.map((stat) => (
-            <div key={stat.label}>
-              <div className="font-display text-3xl text-white md:text-4xl">
-                {stat.value}
+      {/* ── Social Proof Bar ─────────────────────────────────────── */}
+      <section className="relative bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 dark:from-stone-800 dark:via-stone-700 dark:to-stone-800">
+        {/* Subtle blueprint grid overlay */}
+        <div className="blueprint-grid absolute inset-0 opacity-[0.03]" />
+        <div className="relative mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 py-14 sm:grid-cols-3 md:py-16">
+          {STATS.map((stat, i) => (
+            <div
+              key={stat.label}
+              className={`flex flex-col items-center gap-2 text-center ${
+                i < STATS.length - 1
+                  ? "sm:border-r sm:border-white/10"
+                  : ""
+              }`}
+            >
+              <div className="rounded-xl bg-white/[0.06] px-5 py-2 backdrop-blur-sm">
+                <span className="font-display text-3xl text-white md:text-4xl">
+                  {stat.value}
+                </span>
               </div>
-              <div className="mt-1 text-xs tracking-wide text-stone-400 md:text-sm">
+              <span className="text-xs tracking-wide text-stone-400 md:text-sm">
                 {stat.label}
-              </div>
+              </span>
             </div>
           ))}
         </div>
@@ -161,10 +117,7 @@ export default function HomePage() {
 
           <div className="mt-16 grid gap-4 md:grid-cols-3 md:grid-rows-2">
             {/* Card 1 — Conversation (large, dark, spans 2 rows) */}
-            <ScrollReveal
-              className="md:row-span-2"
-              delay={100}
-            >
+            <ScrollReveal className="md:row-span-2" delay={100}>
               <div className="flex h-full flex-col rounded-2xl bg-stone-900 p-8 text-stone-100 dark:bg-stone-800">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                   AI Coaching Session
@@ -247,7 +200,7 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
 
-            {/* Card 4 — Milestones (dark, spans 2 cols) */}
+            {/* Card 4 — Milestones & Reflection (dark, spans 2 cols) */}
             <ScrollReveal className="md:col-span-2" delay={400}>
               <div className="rounded-2xl bg-stone-900 p-8 text-stone-100 dark:bg-stone-800">
                 <div className="grid gap-8 md:grid-cols-2">
@@ -380,15 +333,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── How It Works ─────────────────────────────────────────── */}
+      {/* ── How It Works (condensed — merged methodology into steps) */}
       <section className="border-t border-border bg-card/50">
-        <div className="mx-auto max-w-4xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6 py-24 md:py-32">
           <ScrollReveal>
             <h2 className="font-display text-center text-3xl tracking-tight md:text-4xl">
-              Three steps to your blueprint
+              How it works
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-center text-muted">
-              No prep needed. No forms to fill out. Just show up and talk.
+            <p className="mx-auto mt-4 max-w-lg text-center text-muted">
+              A 5-phase coaching methodology, tested across 11 career personas
+              with no meaningful bias. You just show up and talk.
             </p>
           </ScrollReveal>
 
@@ -407,46 +361,22 @@ export default function HomePage() {
                     <p className="text-sm leading-relaxed text-muted">
                       {step.description}
                     </p>
+                    {/* Phase tags under each step */}
+                    <div className="mt-4 flex flex-wrap justify-center gap-1.5">
+                      {step.phases.map((phase) => (
+                        <span
+                          key={phase}
+                          className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-medium text-primary"
+                        >
+                          {phase}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </ScrollReveal>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── Methodology ──────────────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-24 md:py-32">
-        <ScrollReveal>
-          <h2 className="font-display text-center text-3xl tracking-tight md:text-4xl">
-            A coaching process built on evidence
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-sm leading-relaxed text-muted">
-            Developed through A/B/C testing across multiple LLM providers,
-            validated across 11 diverse career personas, and bias-tested to
-            score 9.29/10 with no meaningful bias across industries.
-          </p>
-        </ScrollReveal>
-
-        <div className="mt-16 flex flex-wrap items-start justify-center gap-4 md:gap-0">
-          {PHASES.map((phase, i) => (
-            <ScrollReveal
-              key={phase.number}
-              delay={i * 100}
-              className="flex items-center"
-            >
-              <div className="flex w-28 flex-col items-center text-center md:w-36">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-                  {phase.number}
-                </div>
-                <h3 className="mt-3 text-sm font-semibold">{phase.title}</h3>
-                <p className="mt-1 text-xs text-muted">{phase.description}</p>
-              </div>
-              {i < PHASES.length - 1 && (
-                <div className="mx-2 hidden h-px w-8 bg-border md:block" />
-              )}
-            </ScrollReveal>
-          ))}
         </div>
       </section>
 
@@ -480,9 +410,7 @@ export default function HomePage() {
       {/* ── Footer ───────────────────────────────────────────────── */}
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-xs text-muted sm:flex-row sm:justify-between">
-          <p>
-            Built with Next.js, Vercel AI SDK, and Claude.
-          </p>
+          <p>Built with Next.js, Vercel AI SDK, and Claude.</p>
           <div className="flex gap-6">
             <Link
               href="/import"
@@ -532,25 +460,20 @@ const STEPS = [
     title: "Share Your Story",
     description:
       "Tell the AI coach about your career history, accomplishments, and aspirations. No prep needed — just talk naturally.",
+    phases: ["Understanding", "Discovery"],
   },
   {
     number: "2",
     title: "Receive Your Blueprint",
     description:
       "The coach synthesizes everything into a structured Career Blueprint — goals, skills, milestones, and reflection.",
+    phases: ["Skills", "Goals"],
   },
   {
     number: "3",
     title: "Track Your Progress",
     description:
       "Your blueprint becomes a living document. Check off actions, update milestones, and revisit monthly.",
+    phases: ["Action"],
   },
-];
-
-const PHASES = [
-  { number: 1, title: "Understanding", description: "Context & background" },
-  { number: 2, title: "Discovery", description: "Strategic questioning" },
-  { number: 3, title: "Skills", description: "Evidence-based assessment" },
-  { number: 4, title: "Goals", description: "Synthesis & articulation" },
-  { number: 5, title: "Action", description: "Milestones & next steps" },
 ];
