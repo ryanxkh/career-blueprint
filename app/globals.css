@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --muted: #71717a;
-  --border: #e4e4e7;
+  --background: #fafaf8;
+  --foreground: #1c1917;
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --muted: #78716c;
+  --border: #e7e5e4;
   --card: #ffffff;
   --success: #059669;
   --success-light: #d1fae5;
@@ -28,17 +28,18 @@
   --color-warning-light: var(--warning-light);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --primary: #3b82f6;
-    --primary-hover: #60a5fa;
-    --muted: #a1a1aa;
-    --border: #27272a;
-    --card: #18181b;
+    --background: #0c0a09;
+    --foreground: #fafaf9;
+    --primary: #8b5cf6;
+    --primary-hover: #a78bfa;
+    --muted: #a8a29e;
+    --border: #292524;
+    --card: #1c1917;
     --success: #10b981;
     --success-light: #064e3b;
     --warning: #f59e0b;
@@ -57,6 +58,89 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Blueprint-style line grid */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(124, 58, 237, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Chat message entrance animation */
+.chat-msg {
+  animation: chatIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes chatIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Typing indicator bounce */
+.typing-dot {
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Hero gradient glow */
+.hero-glow {
+  background:
+    radial-gradient(ellipse at 25% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 30%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 40%);
+}
+
+/* Floating shape animations — mismatched durations + alternate for natural drift */
+@keyframes drift-y-1 {
+  from { transform: translateY(-24px) rotate(-3deg); }
+  to   { transform: translateY(24px) rotate(3deg); }
+}
+@keyframes drift-y-2 {
+  from { transform: translateY(-18px) rotate(4deg); }
+  to   { transform: translateY(18px) rotate(-4deg); }
+}
+@keyframes drift-y-3 {
+  from { transform: translateY(-20px) rotate(-6deg) scale(0.98); }
+  to   { transform: translateY(20px) rotate(6deg) scale(1.02); }
+}
+
+.float-1 {
+  animation: drift-y-1 8s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.float-2 {
+  animation: drift-y-2 13s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.float-3 {
+  animation: drift-y-3 10s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Scroll reveal — data-attribute driven to avoid hydration mismatch */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
 /* Custom scrollbar for chat */
 .chat-scroll::-webkit-scrollbar {
   width: 6px;
@@ -70,6 +154,10 @@ html {
 }
 
 /* Markdown prose inside chat messages */
+.prose-chat {
+  contain: inline-size;
+  overflow-wrap: break-word;
+}
 .prose-chat h1 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; }
 .prose-chat h2 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
 .prose-chat h3 { font-size: 1.1rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }

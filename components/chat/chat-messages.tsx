@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useChatContext, getMessageText } from "./chat-provider";
 
 export function ChatMessages() {
@@ -26,8 +26,8 @@ export function ChatMessages() {
           />
         ))}
 
-        {/* Loading indicator — always show when waiting for response */}
-        {isWaiting && (
+        {/* Loading indicator — only show when submitted (before first token) */}
+        {status === "submitted" && (
           <div className="flex gap-3">
             <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
               C
@@ -54,6 +54,11 @@ export function ChatMessages() {
 function MessageBubble({ role, text }: { role: string; text: string }) {
   const isUser = role === "user";
 
+  const html = useMemo(() => {
+    if (isUser) return "";
+    return renderMarkdown(text);
+  }, [text, isUser]);
+
   return (
     <div className="flex gap-3">
       <div
@@ -74,7 +79,7 @@ function MessageBubble({ role, text }: { role: string; text: string }) {
         ) : (
           <div
             className="prose-chat text-sm"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+            dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
       </div>
@@ -88,6 +93,9 @@ function renderMarkdown(text: string): string {
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
+      // Break bold labels onto their own line when mid-paragraph
+      // Matches " **Label:** " pattern that isn't at the start of a line
+      .replace(/(?<!\n)(\s)\*\*([^*]+?:)\*\*/g, "\n**$2**")
       .replace(/^### (.+)$/gm, "<h3>$1</h3>")
       .replace(/^## (.+)$/gm, "<h2>$1</h2>")
       .replace(/^# (.+)$/gm, "<h1>$1</h1>")
