@@ -72,26 +72,45 @@ html {
     radial-gradient(ellipse at 50% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 40%);
 }
 
-/* Floating shape animations */
-@keyframes float-1 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-12px) rotate(3deg); }
-  50% { transform: translateY(-20px) rotate(0deg); }
-  75% { transform: translateY(-8px) rotate(-3deg); }
+/* Floating shape animations — mismatched durations + alternate for natural drift */
+@keyframes drift-y-1 {
+  from { transform: translateY(-24px) rotate(-3deg); }
+  to   { transform: translateY(24px) rotate(3deg); }
 }
-@keyframes float-2 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-15px) rotate(-4deg); }
-  66% { transform: translateY(-8px) rotate(4deg); }
+@keyframes drift-y-2 {
+  from { transform: translateY(-18px) rotate(4deg); }
+  to   { transform: translateY(18px) rotate(-4deg); }
 }
-@keyframes float-3 {
-  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-  50% { transform: translateY(-18px) rotate(6deg) scale(1.02); }
+@keyframes drift-y-3 {
+  from { transform: translateY(-20px) rotate(-6deg) scale(0.98); }
+  to   { transform: translateY(20px) rotate(6deg) scale(1.02); }
 }
 
-.float-1 { animation: float-1 8s ease-in-out infinite; }
-.float-2 { animation: float-2 12s ease-in-out infinite; }
-.float-3 { animation: float-3 10s ease-in-out infinite; }
+.float-1 {
+  animation: drift-y-1 8s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.float-2 {
+  animation: drift-y-2 13s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.float-3 {
+  animation: drift-y-3 10s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Scroll reveal — data-attribute driven to avoid hydration mismatch */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* Marquee animation */
 @keyframes marquee {
