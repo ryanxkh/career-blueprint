@@ -58,23 +58,23 @@ export default function RootLayout({
               <div className="flex items-center gap-8 text-sm">
                 <Link
                   href="/coach"
-                  className="text-muted transition-colors hover:text-foreground"
+                  className="hidden text-muted transition-colors hover:text-foreground sm:block"
                 >
                   Coach
                 </Link>
                 <Link
                   href="/blueprint"
-                  className="text-muted transition-colors hover:text-foreground"
+                  className="hidden text-muted transition-colors hover:text-foreground sm:block"
                 >
                   Blueprint
                 </Link>
-                <Link
-                  href="/import"
-                  className="text-muted transition-colors hover:text-foreground"
-                >
-                  Import
-                </Link>
                 <AuthButton />
+                <Link
+                  href="/coach"
+                  className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+                >
+                  Get Started
+                </Link>
               </div>
             </nav>
           </header>
