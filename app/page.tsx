@@ -10,7 +10,7 @@ export default function HomePage() {
       <section className="relative">
         {/* Background layers — blueprint-style line grid */}
         <div className="hero-glow absolute inset-0" />
-        <div className="blueprint-grid absolute inset-0 opacity-40" />
+        <div className="blueprint-grid absolute inset-0 opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
         {/* Floating brand shapes */}
@@ -78,7 +78,7 @@ export default function HomePage() {
       {/* ── Social Proof Bar ─────────────────────────────────────── */}
       <section className="relative bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 dark:from-stone-800 dark:via-stone-700 dark:to-stone-800">
         {/* Subtle blueprint grid overlay */}
-        <div className="blueprint-grid absolute inset-0 opacity-[0.03]" />
+        <div className="blueprint-grid absolute inset-0 opacity-20" />
         <div className="relative mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 py-14 sm:grid-cols-3 md:py-16">
           {STATS.map((stat, i) => (
             <div
@@ -382,6 +382,7 @@ export default function HomePage() {
 
       {/* ── Final CTA ────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-t border-border">
+        <div className="blueprint-grid absolute inset-0 opacity-30" />
         {/* Floating shapes */}
         <BlueprintDiamond className="float-1 pointer-events-none absolute -left-10 top-8 h-36 w-36 text-primary/[0.10]" />
         <BlueprintDiamond className="float-3 pointer-events-none absolute -right-12 bottom-8 h-28 w-28 text-primary/[0.08]" />
