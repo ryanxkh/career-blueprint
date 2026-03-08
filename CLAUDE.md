@@ -29,9 +29,10 @@ Next.js 16 (App Router) web app for the Universal Career Development Coaching Pr
 - `middleware.ts` — route protection for /coach and /blueprint
 
 ## Design Tokens
-- Font: Geist Sans (body) / Geist Mono (code/data)
-- Colors: Zinc scale for neutrals, Blue-600 for primary actions, Emerald for success states
-- Border radius: rounded-lg default, rounded-xl for cards
+- Font: Instrument Serif (display headlines) / Geist Sans (body) / Geist Mono (code/data)
+- Colors: Stone scale for neutrals (#fafaf8 bg, #1c1917 fg), Violet-600 (#7c3aed) for primary actions, Emerald for success states
+- Background texture: Blueprint-style line grid (violet-tinted perpendicular lines via linear-gradient)
+- Border radius: rounded-lg default, rounded-xl for cards, rounded-2xl for bento cards, rounded-full for CTAs
 - Spacing: Tailwind defaults, 4px grid
 
 ## Key Architecture
