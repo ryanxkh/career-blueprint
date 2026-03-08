@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
-import { BlueprintDiamond } from "@/components/landing/blueprint-diamond";
 import { HeroChat } from "@/components/landing/hero-chat";
 
 export default function HomePage() {
@@ -13,11 +12,6 @@ export default function HomePage() {
         <div className="blueprint-grid absolute inset-0 opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
-        {/* Floating brand shapes */}
-        <BlueprintDiamond className="float-1 pointer-events-none absolute -right-8 top-12 h-44 w-44 text-primary/[0.12] md:h-56 md:w-56" />
-        <BlueprintDiamond className="float-2 pointer-events-none absolute -left-16 top-1/3 h-32 w-32 text-primary/[0.08]" />
-        <div className="float-3 pointer-events-none absolute bottom-24 right-1/4 h-20 w-20 rounded-full bg-primary/[0.06]" />
-        <div className="float-2 pointer-events-none absolute left-1/3 top-16 h-12 w-12 rounded-xl bg-primary/[0.05] rotate-45" style={{ animationDelay: "3s" }} />
 
         {/* Content */}
         <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-24 md:grid-cols-2 md:items-center md:gap-16 md:py-32 lg:py-40">
@@ -383,9 +377,6 @@ export default function HomePage() {
       {/* ── Final CTA ────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-t border-border">
         <div className="blueprint-grid absolute inset-0 opacity-30" />
-        {/* Floating shapes */}
-        <BlueprintDiamond className="float-1 pointer-events-none absolute -left-10 top-8 h-36 w-36 text-primary/[0.10]" />
-        <BlueprintDiamond className="float-3 pointer-events-none absolute -right-12 bottom-8 h-28 w-28 text-primary/[0.08]" />
 
         <div className="relative mx-auto max-w-3xl px-6 py-24 text-center md:py-32">
           <ScrollReveal>
