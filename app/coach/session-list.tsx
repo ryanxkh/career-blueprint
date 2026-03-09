@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { COACHING_PHASES } from "@/lib/types";
 
 interface SessionData {
@@ -17,6 +17,31 @@ interface SessionData {
 export function SessionList({ sessions }: { sessions: SessionData[] }) {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  async function handleDelete(sessionId: string, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (confirmId !== sessionId) {
+      setConfirmId(sessionId);
+      return;
+    }
+
+    setDeleting(sessionId);
+    await fetch(`/api/sessions/${sessionId}`, { method: "DELETE" });
+    setDeleting(null);
+    setConfirmId(null);
+    router.refresh();
+  }
+
+  useEffect(() => {
+    if (!confirmId) return;
+    function dismiss() { setConfirmId(null); }
+    window.addEventListener("click", dismiss);
+    return () => window.removeEventListener("click", dismiss);
+  }, [confirmId]);
 
   async function handleNewSession() {
     setCreating(true);
@@ -78,19 +103,42 @@ export function SessionList({ sessions }: { sessions: SessionData[] }) {
                   <span>{timeAgo}</span>
                 </div>
               </div>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="shrink-0 text-muted"
-              >
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  onClick={(e) => handleDelete(session.id, e)}
+                  disabled={deleting === session.id}
+                  className={`rounded-lg p-2 transition-colors ${
+                    confirmId === session.id
+                      ? "bg-red-500/15 text-red-400 hover:bg-red-500/25"
+                      : "text-muted hover:bg-white/5 hover:text-foreground"
+                  } disabled:opacity-50`}
+                  title={confirmId === session.id ? "Click again to confirm" : "Delete session"}
+                >
+                  {deleting === session.id ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                  )}
+                </button>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-muted"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
             </Link>
           );
         })}
