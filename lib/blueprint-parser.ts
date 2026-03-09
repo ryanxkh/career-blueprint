@@ -44,13 +44,22 @@ export function parseBlueprint(markdown: string): Blueprint {
 // ── Helpers ──
 
 function getSection(markdown: string, heading: string): string {
-  // Match ## heading and capture until next ## or end
-  const pattern = new RegExp(
-    `^##\\s+${escapeRegex(heading)}[\\s\\S]*?(?=\\n##\\s|$)`,
-    "m"
+  const startPattern = new RegExp(`^##\\s+${escapeRegex(heading)}`, "m");
+  const startMatch = startPattern.exec(markdown);
+  if (!startMatch) return "";
+
+  const startIndex = startMatch.index;
+  const afterHeading = markdown.slice(startIndex + startMatch[0].length);
+  const nextHeadingMatch = afterHeading.match(/\n##\s/);
+
+  if (!nextHeadingMatch || nextHeadingMatch.index === undefined) {
+    return markdown.slice(startIndex);
+  }
+
+  return markdown.slice(
+    startIndex,
+    startIndex + startMatch[0].length + nextHeadingMatch.index
   );
-  const match = markdown.match(pattern);
-  return match ? match[0] : "";
 }
 
 function escapeRegex(str: string): string {
@@ -103,12 +112,22 @@ function parseSkills(markdown: string): BlueprintSkills {
 }
 
 function extractSubsection(section: string, heading: string): string {
-  const pattern = new RegExp(
-    `^###\\s+${escapeRegex(heading)}:?[\\s\\S]*?(?=\\n###\\s|$)`,
-    "m"
+  const startPattern = new RegExp(`^###\\s+${escapeRegex(heading)}:?`, "m");
+  const startMatch = startPattern.exec(section);
+  if (!startMatch) return "";
+
+  const startIndex = startMatch.index;
+  const afterHeading = section.slice(startIndex + startMatch[0].length);
+  const nextSubheadingMatch = afterHeading.match(/\n###\s/);
+
+  if (!nextSubheadingMatch || nextSubheadingMatch.index === undefined) {
+    return section.slice(startIndex);
+  }
+
+  return section.slice(
+    startIndex,
+    startIndex + startMatch[0].length + nextSubheadingMatch.index
   );
-  const match = section.match(pattern);
-  return match ? match[0] : "";
 }
 
 function parseSkillCategories(section: string): SkillCategory[] {
