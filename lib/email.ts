@@ -1,16 +1,18 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const FROM_ADDRESS =
-  process.env.EMAIL_FROM || "Career Blueprint <onboarding@resend.dev>";
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function sendPasswordResetEmail(
   to: string,
   resetUrl: string
 ) {
-  await resend.emails.send({
-    from: FROM_ADDRESS,
+  const from =
+    process.env.EMAIL_FROM || "Career Blueprint <onboarding@resend.dev>";
+
+  await getResend().emails.send({
+    from,
     to,
     subject: "Reset your Career Blueprint password",
     html: `
