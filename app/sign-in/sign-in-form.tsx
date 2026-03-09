@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export function SignInForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/coach";
   const [email, setEmail] = useState("");
@@ -32,8 +31,7 @@ export function SignInForm() {
       return;
     }
 
-    router.push(callbackUrl);
-    router.refresh();
+    window.location.href = callbackUrl;
   }
 
   return (
