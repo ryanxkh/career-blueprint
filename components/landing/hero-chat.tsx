@@ -42,7 +42,7 @@ export function HeroChat() {
   }, []);
 
   return (
-    <div className="space-y-3 p-5">
+    <div className="min-h-[320px] space-y-3 p-5">
       {/* Coach message 1 */}
       {step >= 2 && (
         <div className="chat-msg flex gap-2.5">
