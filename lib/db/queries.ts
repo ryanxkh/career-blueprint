@@ -4,8 +4,9 @@ import {
   coachingSessions,
   sessionMessages,
   blueprints,
+  passwordResetTokens,
 } from "./schema";
-import { eq, and, desc, asc } from "drizzle-orm";
+import { eq, and, desc, asc, lt } from "drizzle-orm";
 import type { Blueprint, DesiredSkillState } from "@/lib/types";
 
 // ── Users ──
@@ -17,6 +18,54 @@ export async function getUserByEmail(email: string) {
     .where(eq(users.email, email))
     .limit(1);
   return user ?? null;
+}
+
+// ── Password Reset Tokens ──
+
+export async function createPasswordResetToken(
+  userId: string,
+  tokenHash: string,
+  expiresAt: Date
+) {
+  // Delete any existing tokens for this user
+  await db
+    .delete(passwordResetTokens)
+    .where(eq(passwordResetTokens.userId, userId));
+
+  const id = crypto.randomUUID();
+  const [token] = await db
+    .insert(passwordResetTokens)
+    .values({ id, userId, tokenHash, expiresAt })
+    .returning();
+  return token;
+}
+
+export async function getPasswordResetToken(tokenHash: string) {
+  const [token] = await db
+    .select()
+    .from(passwordResetTokens)
+    .where(eq(passwordResetTokens.tokenHash, tokenHash))
+    .limit(1);
+  return token ?? null;
+}
+
+export async function deletePasswordResetToken(id: string) {
+  await db
+    .delete(passwordResetTokens)
+    .where(eq(passwordResetTokens.id, id));
+}
+
+export async function deleteExpiredTokens() {
+  await db
+    .delete(passwordResetTokens)
+    .where(lt(passwordResetTokens.expiresAt, new Date()));
+}
+
+export async function updateUserPassword(userId: string, passwordHash: string) {
+  await db
+    .update(users)
+    .set({ passwordHash })
+    .where(eq(users.id, userId));
 }
 
 // ── Sessions ──
