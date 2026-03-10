@@ -6,7 +6,7 @@ import {
   blueprints,
   passwordResetTokens,
 } from "./schema";
-import { eq, and, desc, asc, lt } from "drizzle-orm";
+import { eq, and, desc, asc, lt, count } from "drizzle-orm";
 import type { Blueprint, DesiredSkillState } from "@/lib/types";
 
 // ── Users ──
@@ -176,11 +176,11 @@ export async function addMessage(
 }
 
 export async function getMessageCount(sessionId: string) {
-  const messages = await db
-    .select({ id: sessionMessages.id })
+  const [result] = await db
+    .select({ count: count() })
     .from(sessionMessages)
     .where(eq(sessionMessages.sessionId, sessionId));
-  return messages.length;
+  return result?.count ?? 0;
 }
 
 // ── Blueprints ──
