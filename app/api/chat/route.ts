@@ -14,6 +14,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
+
     const { allowed } = rateLimit(`chat:${session.user.id}`, { windowMs: 60_000, maxRequests: 20 });
     if (!allowed) {
       return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429 });
@@ -62,7 +66,7 @@ export async function POST(req: Request) {
     const modelMessages = await convertToModelMessages(messages);
 
     const result = streamText({
-      model: anthropic("claude-sonnet-4-20250514"),
+      model: anthropic(process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514"),
       system,
       messages: modelMessages,
       maxOutputTokens: 4096,

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (typeof email !== "string" || !email.includes("@")) {
+    if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
         { error: "Invalid email address." },
         { status: 400 }
