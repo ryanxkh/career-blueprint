@@ -439,8 +439,10 @@ You've successfully completed when you have 3-5 concrete, observable milestones 
 ### Final Deliverable:
 Present the completed Career Blueprint in this format:
 
+**Important:** Use an em-dash (\u2014) not a hyphen (-) in the title. The exact format `# Career Blueprint \u2014 [Name]` is required for the app to detect and parse the blueprint correctly.
+
 ```markdown
-# Career Blueprint — [Name]
+# Career Blueprint \u2014 [Name]
 
 ## Career Goals
 
@@ -505,6 +507,8 @@ Present the completed Career Blueprint in this format:
 | [Date] | Not Started | [Specific, observable action] | • [Observable outcome 1]<br>• [Observable outcome 2] |
 | [Date] | Not Started | [Specific, observable action] | • [Observable outcome 1]<br>• [Observable outcome 2] |
 | [Date] | Not Started | [Specific, observable action] | • [Observable outcome 1]<br>• [Observable outcome 2] |
+
+**Status values must be exactly one of:** Not Started | In Progress | Completed | Deferred
 
 ---
 

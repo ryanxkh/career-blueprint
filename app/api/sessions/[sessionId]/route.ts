@@ -41,7 +41,11 @@ export async function PATCH(
 
   const { sessionId } = await params;
   const body = await req.json();
-  const updated = await updateSession(sessionId, session.user.id, body);
+  const allowed: { title?: string; phase?: number; isComplete?: boolean } = {};
+  if (typeof body.title === "string") allowed.title = body.title;
+  if (typeof body.phase === "number") allowed.phase = body.phase;
+  if (typeof body.isComplete === "boolean") allowed.isComplete = body.isComplete;
+  const updated = await updateSession(sessionId, session.user.id, allowed);
 
   if (!updated) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -15,6 +15,13 @@
       "when": 1773064996266,
       "tag": "0001_bright_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773098584402,
+      "tag": "0002_cute_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }

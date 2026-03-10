@@ -31,7 +31,12 @@ export async function PATCH(
 
   const { blueprintId } = await params;
   const body = await req.json();
-  const updated = await updateBlueprint(blueprintId, session.user.id, body);
+  const allowed: Parameters<typeof updateBlueprint>[2] = {};
+  if (body.data && typeof body.data === "object") allowed.data = body.data;
+  if (Array.isArray(body.skillProgress)) allowed.skillProgress = body.skillProgress;
+  if (typeof body.lastReviewed === "string") allowed.lastReviewed = new Date(body.lastReviewed);
+  if (typeof body.name === "string") allowed.name = body.name;
+  const updated = await updateBlueprint(blueprintId, session.user.id, allowed);
 
   if (!updated) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

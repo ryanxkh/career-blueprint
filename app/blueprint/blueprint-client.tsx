@@ -39,7 +39,7 @@ export function BlueprintClient({
 }
 
 function BlueprintContent() {
-  const { blueprint } = useBlueprintContext();
+  const { blueprint, saveError } = useBlueprintContext();
 
   if (!blueprint) {
     return (
@@ -114,6 +114,12 @@ function BlueprintContent() {
       </div>
 
       <BlueprintLivingDoc />
+
+      {saveError && (
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          Changes couldn&apos;t be saved. Check your connection and try again.
+        </div>
+      )}
 
       <div className="mt-8 space-y-10">
         <BlueprintGoals />

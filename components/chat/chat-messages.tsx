@@ -87,6 +87,14 @@ function MessageBubble({ role, text }: { role: string; text: string }) {
   );
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function renderMarkdown(text: string): string {
   return (
     text
@@ -124,7 +132,7 @@ function renderMarkdown(text: string): string {
             .filter(Boolean)
             .map((c) => c.trim());
           if (cells.every((c) => /^-+$/.test(c))) return "";
-          return `<tr>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`;
+          return `<tr>${cells.map((c) => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`;
         }
       )
       .replace(/((?:<tr>.*<\/tr>\n?)+)/g, "<table>$1</table>")

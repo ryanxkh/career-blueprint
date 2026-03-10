@@ -1,58 +1,86 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText, convertToModelMessages } from "ai";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { addMessage, getMessageCount, getSessionById } from "@/lib/db/queries";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 120;
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { messages, system, sessionId } = await req.json();
+    const { allowed } = rateLimit(`chat:${session.user.id}`, { windowMs: 60_000, maxRequests: 20 });
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429 });
+    }
 
-  if (!sessionId) {
-    return new Response("sessionId is required", { status: 400 });
-  }
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
 
-  // Verify session ownership
-  const coachingSession = await getSessionById(sessionId, session.user.id);
-  if (!coachingSession) {
-    return new Response("Session not found", { status: 404 });
-  }
+    const { messages, system, sessionId } = body;
 
-  // Persist the user message before calling Claude
-  const lastUserMessage = messages[messages.length - 1];
-  if (lastUserMessage?.role === "user") {
-    const userContent =
-      typeof lastUserMessage.content === "string"
-        ? lastUserMessage.content
-        : lastUserMessage.parts
-            ?.filter(
-              (p: { type: string; text?: string }) => p.type === "text"
-            )
-            .map((p: { text: string }) => p.text)
-            .join("") ?? "";
+    if (!sessionId || typeof sessionId !== "string") {
+      return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
+    }
 
-    const count = await getMessageCount(sessionId);
-    await addMessage(sessionId, "user", userContent, count);
-  }
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: "messages are required" }, { status: 400 });
+    }
 
-  const modelMessages = await convertToModelMessages(messages);
+    // Verify session ownership
+    const coachingSession = await getSessionById(sessionId, session.user.id);
+    if (!coachingSession) {
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system,
-    messages: modelMessages,
-    maxOutputTokens: 4096,
-    async onFinish({ text }) {
-      // Persist the assistant message after streaming completes
+    // Persist the user message before calling Claude
+    const lastUserMessage = messages[messages.length - 1];
+    if (lastUserMessage?.role === "user") {
+      const userContent =
+        typeof lastUserMessage.content === "string"
+          ? lastUserMessage.content
+          : lastUserMessage.parts
+              ?.filter(
+                (p: { type: string; text?: string }) => p.type === "text"
+              )
+              .map((p: { text: string }) => p.text)
+              .join("") ?? "";
+
       const count = await getMessageCount(sessionId);
-      await addMessage(sessionId, "assistant", text, count);
-    },
-  });
+      await addMessage(sessionId, "user", userContent, count);
+    }
 
-  return result.toUIMessageStreamResponse();
+    const modelMessages = await convertToModelMessages(messages);
+
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system,
+      messages: modelMessages,
+      maxOutputTokens: 4096,
+      async onFinish({ text }) {
+        try {
+          const count = await getMessageCount(sessionId);
+          await addMessage(sessionId, "assistant", text, count);
+        } catch {
+          // Message persistence failed — not ideal but don't break the stream
+        }
+      },
+    });
+
+    return result.toUIMessageStreamResponse();
+  } catch {
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 }
+    );
+  }
 }

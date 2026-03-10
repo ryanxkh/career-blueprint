@@ -6,9 +6,16 @@ import {
   deletePasswordResetToken,
   updateUserPassword,
 } from "@/lib/db/queries";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+    const { allowed } = rateLimit(`reset:${ip}`, { windowMs: 60_000, maxRequests: 5 });
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
+
     const { token, password } = await req.json();
 
     if (!token || typeof token !== "string") {

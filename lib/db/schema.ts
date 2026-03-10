@@ -5,6 +5,7 @@ import {
   integer,
   boolean,
   jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -25,7 +26,9 @@ export const coachingSessions = pgTable("coaching_sessions", {
   isComplete: boolean("is_complete").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_coaching_sessions_user_id").on(table.userId),
+]);
 
 export const sessionMessages = pgTable("session_messages", {
   id: text("id").primaryKey(),
@@ -36,7 +39,9 @@ export const sessionMessages = pgTable("session_messages", {
   content: text("content").notNull(),
   orderIndex: integer("order_index").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_session_messages_session_id").on(table.sessionId),
+]);
 
 export const passwordResetTokens = pgTable("password_reset_tokens", {
   id: text("id").primaryKey(),
@@ -46,7 +51,9 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   tokenHash: text("token_hash").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_password_reset_tokens_token_hash").on(table.tokenHash),
+]);
 
 export const blueprints = pgTable("blueprints", {
   id: text("id").primaryKey(),
@@ -62,4 +69,6 @@ export const blueprints = pgTable("blueprints", {
   lastReviewed: timestamp("last_reviewed"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_blueprints_user_id").on(table.userId),
+]);

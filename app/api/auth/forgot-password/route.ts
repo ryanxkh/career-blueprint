@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 import { createHash, randomUUID } from "crypto";
 import { getUserByEmail, createPasswordResetToken, deleteExpiredTokens } from "@/lib/db/queries";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+    const { allowed } = rateLimit(`forgot:${ip}`, { windowMs: 60_000, maxRequests: 3 });
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
+
     const { email } = await req.json();
 
     if (!email || typeof email !== "string" || !email.includes("@")) {

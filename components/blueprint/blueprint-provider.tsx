@@ -12,6 +12,7 @@ interface BlueprintContextValue {
   blueprint: Blueprint | null;
   skillProgress: DesiredSkillState[];
   lastReviewed: string | null;
+  saveError: boolean;
   toggleAction: (index: number) => void;
   updateMilestoneStatus: (index: number, status: MilestoneStatus) => void;
   updateSkillProgress: (skillName: string, progress: SkillProgress) => void;
@@ -44,15 +45,21 @@ export function BlueprintProvider({
   const [blueprint, setBlueprint] = useState<Blueprint | null>(initialBlueprint);
   const [skillProgress, setSkillProgressState] = useState<DesiredSkillState[]>(initialSkillProgress);
   const [lastReviewedDate, setLastReviewedDate] = useState<string | null>(initialLastReviewed);
+  const [saveError, setSaveError] = useState(false);
 
   // Persist changes to server
   function persistToServer(data: Record<string, unknown>) {
     if (!blueprintId) return;
+    setSaveError(false);
     fetch(`/api/blueprints/${blueprintId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-    }).catch(() => {});
+    }).then((res) => {
+      if (!res.ok) setSaveError(true);
+    }).catch(() => {
+      setSaveError(true);
+    });
   }
 
   const toggleAction = useCallback(
@@ -112,6 +119,7 @@ export function BlueprintProvider({
         blueprint,
         skillProgress,
         lastReviewed: lastReviewedDate,
+        saveError,
         toggleAction,
         updateMilestoneStatus,
         updateSkillProgress: updateSkillProgressFn,
